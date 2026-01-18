@@ -19,7 +19,10 @@ export default defineIntegration({
                                     const LOCALS_KEY = Symbol("pagemeta");
 
                                     export const setPagemeta = ({ ctx, metadata }) => {
-                                        ctx.locals[LOCALS_KEY] = metadata;
+                                        ctx.locals[LOCALS_KEY] = {
+                                            ...ctx.locals[LOCALS_KEY],
+                                            ...metadata
+                                        };
                                     };
 
                                     export const resolveMeta = (ctx) => {

@@ -39,5 +39,5 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true
     },
-    "exclude": ["plan"]
+    "exclude": ["plan", "**/dist"]
 }
