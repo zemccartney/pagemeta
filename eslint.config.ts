@@ -17,6 +17,9 @@ const gitignorePath = Path.resolve(import.meta.dirname, ".gitignore");
 export default defineConfig([
     includeIgnoreFile(gitignorePath),
     {
+        ignores: ["plan"]
+    },
+    {
         extends: [comments.recommended],
         rules: {
             "@eslint-community/eslint-comments/require-description": "error"
@@ -58,7 +61,12 @@ export default defineConfig([
         rules: {
             "block-scoped-var": ["error"],
             "unicorn/no-keyword-prefix": ["off"],
-            "unicorn/prevent-abbreviations": ["off"]
+            "unicorn/prevent-abbreviations": ["off"],
+            // irons out conflict between declaration in HTML (astro fixtures) and exact verification in node setting (tests)
+            "unicorn/text-encoding-identifier-case": [
+                "error",
+                { withDash: true }
+            ]
         }
     },
     // ... but typed linting crashes eslint on astro files, seems to be some conflict in
