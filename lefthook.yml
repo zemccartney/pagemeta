@@ -1,0 +1,17 @@
+# https://lefthook.dev/examples/commitlint.html
+# https://github.com/TrigenSoftware/simple-release/blob/main/GUIDE.md
+
+# Build commit messages
+prepare-commit-msg:
+    commands:
+        commitzen:
+            interactive: true
+            run: pnpm cz --hook # Or npx cz --hook
+            env:
+                LEFTHOOK: "0"
+
+# Validate commit messages
+commit-msg:
+    commands:
+        "lint commit message":
+            run: pnpm commitlint --edit {1}
