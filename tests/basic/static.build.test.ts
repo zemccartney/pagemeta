@@ -1,0 +1,142 @@
+import type { AstroInlineConfig } from "astro";
+
+import { loadFixture } from "@inox-tools/astro-tests/astroFixture";
+import { beforeAll, describe, expect, test } from "vitest";
+
+import pagemeta from "../../src/index.ts";
+import { extractMeta } from "../utils/extract-meta.ts";
+
+const fixture = await loadFixture({
+    root: "./fixtures"
+});
+
+const config = {
+    integrations: [pagemeta()]
+} satisfies AstroInlineConfig;
+
+describe("static / build", () => {
+    beforeAll(async () => {
+        await fixture.build(config);
+    });
+
+    test("injects title and description meta tags", async () => {
+        const html = await fixture.readFile("/index.html");
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- test will fail if null
+        const headMeta = extractMeta(html!);
+
+        expect(headMeta).toEqual([
+            { properties: { charSet: "utf-8" }, tag: "meta" },
+            { properties: { text: "Test Page Title" }, tag: "title" },
+            {
+                properties: {
+                    content: "Test page description",
+                    name: "description"
+                },
+                tag: "meta"
+            }
+        ]);
+    });
+
+    test("page without setPagemeta() passes through unmodified", async () => {
+        const html = await fixture.readFile("/no-meta/index.html");
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- test will fail if null
+        const headMeta = extractMeta(html!);
+
+        expect(headMeta).toEqual([
+            { properties: { charSet: "utf-8" }, tag: "meta" }
+        ]);
+    });
+
+    test("injects complex metadata with OG and Twitter tags", async () => {
+        const html = await fixture.readFile("/complex/index.html");
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- test will fail if null
+        const headMeta = extractMeta(html!);
+
+        expect(headMeta).toEqual([
+            { properties: { charSet: "utf-8" }, tag: "meta" },
+            {
+                properties: {
+                    text: "Understanding Astro Integrations - Astro Blog"
+                },
+                tag: "title"
+            },
+            {
+                properties: {
+                    content:
+                        "A deep dive into how Astro integrations work and how to build your own.",
+                    name: "description"
+                },
+                tag: "meta"
+            },
+            {
+                properties: { content: "Jane Developer", name: "author" },
+                tag: "meta"
+            },
+            {
+                properties: { content: "article", property: "og:type" },
+                tag: "meta"
+            },
+            {
+                properties: {
+                    content: "Astro Blog",
+                    property: "og:site_name"
+                },
+                tag: "meta"
+            },
+            {
+                properties: {
+                    content: "Understanding Astro Integrations",
+                    property: "og:title"
+                },
+                tag: "meta"
+            },
+            {
+                properties: {
+                    content:
+                        "A deep dive into how Astro integrations work and how to build your own.",
+                    property: "og:description"
+                },
+                tag: "meta"
+            },
+            {
+                properties: {
+                    content: "@astrodotbuild",
+                    name: "twitter:site"
+                },
+                tag: "meta"
+            },
+            {
+                properties: {
+                    content: "@janedev",
+                    name: "twitter:creator"
+                },
+                tag: "meta"
+            }
+        ]);
+    });
+
+    test("multiple setPagemeta calls merge metadata", async () => {
+        const html = await fixture.readFile("/override/index.html");
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- test will fail if null
+        const headMeta = extractMeta(html!);
+
+        expect(headMeta).toEqual([
+            { properties: { charSet: "utf-8" }, tag: "meta" },
+            {
+                properties: { text: "Overridden Title - Site Name" },
+                tag: "title"
+            },
+            {
+                properties: {
+                    content: "Overridden description",
+                    name: "description"
+                },
+                tag: "meta"
+            },
+            {
+                properties: { content: "Initial Author", name: "author" },
+                tag: "meta"
+            }
+        ]);
+    });
+});

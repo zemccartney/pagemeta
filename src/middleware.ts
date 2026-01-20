@@ -1,4 +1,4 @@
-import { resolveMeta } from "@grepco/pagemeta/runtime";
+import { resolveMeta } from "@grepco/astro-pagemeta/runtime";
 import { defineMiddleware } from "astro/middleware";
 import { rehype } from "rehype";
 import rehypeMeta from "rehype-meta";
