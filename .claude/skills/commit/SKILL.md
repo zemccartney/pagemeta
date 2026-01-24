@@ -31,17 +31,17 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Conventional Commit Types
 
-| Type | Use for |
-|------|---------|
-| `feat` | New features |
-| `fix` | Bug fixes |
-| `test` | Test additions or changes |
-| `chore` | Dependencies, build config, maintenance |
-| `docs` | Documentation only |
+| Type       | Use for                                    |
+| ---------- | ------------------------------------------ |
+| `feat`     | New features                               |
+| `fix`      | Bug fixes                                  |
+| `test`     | Test additions or changes                  |
+| `chore`    | Dependencies, build config, maintenance    |
+| `docs`     | Documentation only                         |
 | `refactor` | Code restructuring without behavior change |
-| `perf` | Performance improvements |
-| `ci` | CI/CD configuration |
-| `style` | Formatting, whitespace (no code change) |
+| `perf`     | Performance improvements                   |
+| `ci`       | CI/CD configuration                        |
+| `style`    | Formatting, whitespace (no code change)    |
 
 ## Message Guidelines
 
@@ -73,6 +73,7 @@ EOF
 ## Examples from This Project
 
 Recent commits follow this style:
+
 - `chore: bump deps`
 - `test: improve virtual imports with aik-mod`
 - `test: expand basic tests, complicated metadata and overriding behavior`

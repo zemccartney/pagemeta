@@ -77,6 +77,8 @@ describe("function-defaults / SSR / dev server", () => {
             },
             {
                 properties: {
+                    // Note absence of a trailing slash, differs from static test assertion.
+                    // build.format doesn't apply, as no HTML files generated within setting used there (build.format: 'directory')
                     content: "Page at /test-page",
                     name: "description"
                 },

@@ -11,6 +11,9 @@ const fixture = await loadFixture({
 });
 
 const config = {
+    // Default, but setting here to make explicit why our tests check
+    // for pathnames with a trailing slash
+    build: { format: "directory" },
     integrations: [
         pagemeta({
             defaults: (ctx) => ({
@@ -68,6 +71,7 @@ describe("function-defaults / static / build", () => {
             },
             {
                 properties: {
+                    // Note trailing slash, see comment above on config, build.format
                     content: "Page at /test-page/",
                     name: "description"
                 },
