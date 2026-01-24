@@ -17,9 +17,6 @@ const gitignorePath = Path.resolve(import.meta.dirname, ".gitignore");
 export default defineConfig([
     includeIgnoreFile(gitignorePath),
     {
-        ignores: ["plan"]
-    },
-    {
         extends: [comments.recommended],
         rules: {
             "@eslint-community/eslint-comments/require-description": "error"

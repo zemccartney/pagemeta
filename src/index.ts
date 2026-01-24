@@ -49,7 +49,9 @@ export default defineIntegration({
 
                                 const _defaults = options.defaults;
 
-                                if (pageMeta === false) return;
+                                if (pageMeta === false) {
+                                    return;
+                                }
 
                                 const computedDefaults =
                                     typeof _defaults === "function" ?

@@ -1,5 +1,5 @@
-import type { AstroInlineConfig } from "astro";
 import type { TestApp } from "@inox-tools/astro-tests/astroFixture";
+import type { AstroInlineConfig } from "astro";
 
 import { loadFixture } from "@inox-tools/astro-tests/astroFixture";
 import testAdapter from "@inox-tools/astro-tests/testAdapter";
@@ -35,9 +35,7 @@ describe("function-defaults / SSR / build", () => {
     });
 
     test("function receives context and generates defaults", async () => {
-        const response = await app.render(
-            new Request("https://example.com/")
-        );
+        const response = await app.render(new Request("https://example.com/"));
         const html = await response.text();
         const headMeta = extractMeta(html);
 
