@@ -4,7 +4,7 @@
         "lib": ["esnext"],
         "module": "nodenext",
         "skipLibCheck": true,
-        "target": "esnext",
+        "target": "es2022",
         "types": ["node"],
 
         // module system behavior
@@ -20,12 +20,13 @@
         "verbatimModuleSyntax": true,
 
         // output / publishing
-        "sourceMap": true,
-        "declaration": true,
-        "declarationMap": true,
+        // "noEmitOnError": true,
+        // "sourceMap": true,
+        // "declaration": true,
+        // "declarationMap": true,
         // File Layout
-        // "rootDir": "./src",
-        // "outDir": "./dist",
+        "rootDir": ".",
+        "outDir": "./dist",
 
         // typechecking
         "strict": true,
@@ -39,5 +40,5 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true
     },
-    "exclude": [".plan", "**/dist"]
+    "exclude": [".plan", "./runtime-stub.js", "**/dist"]
 }

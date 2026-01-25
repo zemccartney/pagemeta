@@ -17,7 +17,10 @@ const gitignorePath = Path.resolve(import.meta.dirname, ".gitignore");
 export default defineConfig([
     includeIgnoreFile(gitignorePath),
     {
-        ignores: [".plan"] // replicate global ignore settings
+        ignores: [
+            ".plan", // replicate global ignore settings
+            "runtime-stub.js"
+        ]
     },
     {
         extends: [comments.recommended],

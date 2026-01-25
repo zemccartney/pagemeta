@@ -9,6 +9,8 @@ import {
 } from "astro-integration-kit";
 import { z } from "astro/zod";
 
+import type { ResolveMeta, SetPagemeta } from "./types.ts";
+
 const optionsSchema = z
     .object({
         defaults: z
@@ -38,9 +40,9 @@ export default defineIntegration({
         return withPlugins({
             hooks: {
                 "astro:config:setup": ({ addMiddleware, defineModule }) => {
-                    defineModule(`${name}/runtime`, {
+                    defineModule(`virtual:${name}/runtime`, {
                         constExports: {
-                            resolveMeta: (ctx: APIContext) => {
+                            resolveMeta: ((ctx) => {
                                 // @ts-expect-error -- index type error, not worrying about it given we're coordinating with our own symbol
                                 const pageMeta = ctx.locals[LOCALS_KEY] as
                                     | false // hard opt-out i.e. skip any defaults, don't set any meta tags
@@ -66,14 +68,8 @@ export default defineIntegration({
                                 }
 
                                 return { ...computedDefaults, ...pageMeta };
-                            },
-                            setPagemeta: ({
-                                ctx,
-                                metadata
-                            }: {
-                                ctx: APIContext;
-                                metadata: false | Options;
-                            }) => {
+                            }) satisfies ResolveMeta,
+                            setPagemeta: (({ ctx, metadata }) => {
                                 if (metadata === false) {
                                     // @ts-expect-error -- index type error, not worrying about it given we're coordinating with our own symbol
                                     ctx.locals[LOCALS_KEY] = false;
@@ -91,7 +87,7 @@ export default defineIntegration({
                                     ...pageMeta,
                                     ...metadata
                                 };
-                            }
+                            }) satisfies SetPagemeta
                         }
                     });
 
