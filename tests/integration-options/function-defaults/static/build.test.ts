@@ -93,4 +93,67 @@ describe("function-defaults / static / build", () => {
             }
         ]);
     });
+
+    test("function defaults override template title", async () => {
+        const html = await fixture.readFile("/template-defaults/index.html");
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- test will fail if null
+        expect(extractMeta(html!)).toEqual([
+            { properties: { charSet: "utf-8" }, tag: "meta" },
+            {
+                properties: { text: "/template-defaults - example.com" },
+                tag: "title"
+            },
+            {
+                properties: {
+                    content: "Page at /template-defaults/",
+                    name: "description"
+                },
+                tag: "meta"
+            },
+            {
+                properties: { content: "Function Author", name: "author" },
+                tag: "meta"
+            }
+        ]);
+    });
+
+    test("full cascade: setPagemeta > function defaults > template", async () => {
+        const html = await fixture.readFile("/full-cascade/index.html");
+
+        // All 3 sources contribute:
+        // - Template: charset, generator, og:site_name (preserved)
+        // - Function defaults: author, description (using pathname)
+        // - setPagemeta: title (overrides function default)
+        //
+        // Template metadata survives because:
+        // - generator: rehype-meta doesn't manage this tag
+        // - og:site_name: rehype-meta manages it, but we didn't set it
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- test will fail if null
+        expect(extractMeta(html!)).toEqual([
+            { properties: { charSet: "utf-8" }, tag: "meta" },
+            {
+                properties: { content: "Astro", name: "generator" },
+                tag: "meta"
+            },
+            {
+                properties: {
+                    content: "Template Site Name",
+                    property: "og:site_name"
+                },
+                tag: "meta"
+            },
+            { properties: { text: "Title from setPagemeta" }, tag: "title" },
+            {
+                properties: {
+                    content: "Page at /full-cascade/",
+                    name: "description"
+                },
+                tag: "meta"
+            },
+            {
+                properties: { content: "Function Author", name: "author" },
+                tag: "meta"
+            }
+        ]);
+    });
 });

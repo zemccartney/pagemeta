@@ -86,4 +86,74 @@ describe("static-defaults / static / build", () => {
             { properties: { charSet: "utf-8" }, tag: "meta" }
         ]);
     });
+
+    test("defaults override template title", async () => {
+        const html = await fixture.readFile("/template-defaults/index.html");
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- test will fail if null
+        const headMeta = extractMeta(html!);
+
+        // Default title replaces template title
+        expect(headMeta).toEqual([
+            { properties: { charSet: "utf-8" }, tag: "meta" },
+            { properties: { text: "Default Title" }, tag: "title" },
+            {
+                properties: {
+                    content: "Default site description",
+                    name: "description"
+                },
+                tag: "meta"
+            },
+            {
+                properties: {
+                    content: "Default Author",
+                    name: "author"
+                },
+                tag: "meta"
+            }
+        ]);
+    });
+
+    test("full cascade: setPagemeta > defaults > template", async () => {
+        const html = await fixture.readFile("/full-cascade/index.html");
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- test will fail if null
+        const headMeta = extractMeta(html!);
+
+        // All 3 sources contribute:
+        // - Template: charset, generator, og:site_name (preserved)
+        // - Defaults: title (overrides template), author (added)
+        // - setPagemeta: description (overrides defaults)
+        //
+        // Template metadata survives because:
+        // - generator: rehype-meta doesn't manage this tag
+        // - og:site_name: rehype-meta manages it, but we didn't set it
+        expect(headMeta).toEqual([
+            { properties: { charSet: "utf-8" }, tag: "meta" },
+            {
+                properties: { content: "Astro", name: "generator" },
+                tag: "meta"
+            },
+            {
+                properties: {
+                    content: "Template Site Name",
+                    property: "og:site_name"
+                },
+                tag: "meta"
+            },
+            { properties: { text: "Default Title" }, tag: "title" },
+            {
+                properties: {
+                    content: "Description from setPagemeta",
+                    name: "description"
+                },
+                tag: "meta"
+            },
+            {
+                properties: {
+                    content: "Default Author",
+                    name: "author"
+                },
+                tag: "meta"
+            }
+        ]);
+    });
 });

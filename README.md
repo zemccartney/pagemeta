@@ -411,3 +411,24 @@ TODO is order of output defined?
 
 - see architecture diagram (TODO) - see theory (TODO) - integration ordering -
   mention pre-existing tags take precedence
+
+## Assumptions and Limitations
+
+### Only rehype-meta managed tags are settable
+
+This integration uses [rehype-meta](https://github.com/rehypejs/rehype-meta) under the hood to inject meta tags. Only the tags that rehype-meta knows how to manage can be set or overridden via `setPagemeta()` or integration defaults.
+
+For example, Astro's `<meta name="generator" content="Astro">` tag (commonly present in templates) is **not** managed by rehype-meta. This means:
+
+- You cannot set or override the generator tag via this integration
+- If it exists in your template, it will always be preserved as-is
+
+Conversely, tags that rehype-meta **does** manage (like `title`, `description`, `author`, `og:*`, `twitter:*`) will be overridden if you set them via `setPagemeta()` or defaults, but preserved if you don't.
+
+In practice, this means your template's existing meta tags integrate naturally with this integration:
+
+- Tags rehype-meta doesn't manage: always preserved (e.g., `generator`, `viewport`, `charset`)
+- Tags rehype-meta manages but you don't set: preserved from template
+- Tags you set via defaults or `setPagemeta()`: override any existing template values
+
+See [rehype-meta's options](https://github.com/rehypejs/rehype-meta?tab=readme-ov-file#options) for the full list of managed tags.

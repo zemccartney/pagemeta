@@ -147,4 +147,45 @@ describe("SSR / dev server", () => {
             }
         ]);
     });
+
+    test("setPagemeta overrides template title and preserves other template meta", async () => {
+        const response = await fixture.fetch("/template-setpagemeta");
+        const html = await response.text();
+        const headMeta = extractMeta(html);
+
+        // setPagemeta overrides template title, adds description
+        // Template's generator meta is preserved
+        expect(headMeta).toEqual([
+            { properties: { charSet: "utf-8" }, tag: "meta" },
+            {
+                properties: { content: "Astro", name: "generator" },
+                tag: "meta"
+            },
+            { properties: { text: "Title from setPagemeta" }, tag: "title" },
+            {
+                properties: {
+                    content: "Description from setPagemeta",
+                    name: "description"
+                },
+                tag: "meta"
+            }
+        ]);
+    });
+
+    test("rehype-meta creates head element if missing", async () => {
+        const response = await fixture.fetch("/no-head");
+        const html = await response.text();
+        const headMeta = extractMeta(html);
+
+        expect(headMeta).toEqual([
+            { properties: { text: "Title for Headless Page" }, tag: "title" },
+            {
+                properties: {
+                    content: "Description for headless page",
+                    name: "description"
+                },
+                tag: "meta"
+            }
+        ]);
+    });
 });
