@@ -1,20 +1,17 @@
 ---
 import { setPagemeta } from "@grepco/astro-pagemeta/runtime";
 
-setPagemeta({
-    ctx: Astro,
-    metadata: {
-        author: "Jane Developer",
-        authorTwitter: "@janedev",
-        description:
-            "A deep dive into how Astro integrations work and how to build your own.",
-        name: "Astro Blog",
-        og: true,
-        siteTwitter: "@astrodotbuild",
-        title: "Understanding Astro Integrations",
-        twitter: true,
-        type: "article"
-    }
+setPagemeta(Astro, {
+    author: "Jane Developer",
+    authorTwitter: "@janedev",
+    description:
+        "A deep dive into how Astro integrations work and how to build your own.",
+    name: "Astro Blog",
+    og: true,
+    siteTwitter: "@astrodotbuild",
+    title: "Understanding Astro Integrations",
+    twitter: true,
+    type: "article"
 });
 ---
 

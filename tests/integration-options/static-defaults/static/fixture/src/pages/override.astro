@@ -1,12 +1,9 @@
 ---
 import { setPagemeta } from "@grepco/astro-pagemeta/runtime";
 
-setPagemeta({
-    ctx: Astro,
-    metadata: {
-        description: "Overridden description",
-        title: "Overridden Title"
-    }
+setPagemeta(Astro, {
+    description: "Overridden description",
+    title: "Overridden Title"
 });
 ---
 

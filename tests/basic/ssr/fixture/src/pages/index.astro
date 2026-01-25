@@ -1,12 +1,9 @@
 ---
 import { setPagemeta } from "@grepco/astro-pagemeta/runtime";
 
-setPagemeta({
-    ctx: Astro,
-    metadata: {
-        description: "Test page description",
-        title: "Test Page Title"
-    }
+setPagemeta(Astro, {
+    description: "Test page description",
+    title: "Test Page Title"
 });
 ---
 

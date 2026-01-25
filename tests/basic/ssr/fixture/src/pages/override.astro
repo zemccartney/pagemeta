@@ -2,23 +2,17 @@
 import { setPagemeta } from "@grepco/astro-pagemeta/runtime";
 
 // First call sets initial metadata
-setPagemeta({
-    ctx: Astro,
-    metadata: {
-        author: "Initial Author",
-        description: "Initial description",
-        title: "Initial Title"
-    }
+setPagemeta(Astro, {
+    author: "Initial Author",
+    description: "Initial description",
+    title: "Initial Title"
 });
 
 // Second call merges: overrides title, keeps author, adds new field
-setPagemeta({
-    ctx: Astro,
-    metadata: {
-        description: "Overridden description",
-        name: "Site Name",
-        title: "Overridden Title"
-    }
+setPagemeta(Astro, {
+    description: "Overridden description",
+    name: "Site Name",
+    title: "Overridden Title"
 });
 ---
 

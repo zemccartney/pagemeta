@@ -1,4 +1,4 @@
-import { resolveMeta } from "@grepco/astro-pagemeta/runtime";
+import { resolvePagemeta } from "@grepco/astro-pagemeta/runtime";
 import { defineMiddleware } from "astro/middleware";
 import { rehype } from "rehype";
 import rehypeMeta from "rehype-meta";
@@ -15,7 +15,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
         return response;
     }
 
-    const metadata = resolveMeta(context);
+    const metadata = resolvePagemeta(context);
 
     if (!metadata) {
         return response;

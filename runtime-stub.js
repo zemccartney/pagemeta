@@ -26,5 +26,5 @@ try {
     }
 }
 
-export const resolveMeta = mod.resolveMeta;
+export const resolvePagemeta = mod.resolvePagemeta;
 export const setPagemeta = mod.setPagemeta;
