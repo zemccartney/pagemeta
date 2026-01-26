@@ -55,10 +55,23 @@ export default defineIntegration({
                                     return;
                                 }
 
-                                const computedDefaults =
-                                    typeof _defaults === "function" ?
-                                        _defaults(ctx)
-                                    :   (_defaults ?? {});
+                                let computedDefaults: Options;
+                                if (typeof _defaults === "function") {
+                                    const result = _defaults(ctx);
+                                    if (
+                                        typeof result !== "object" ||
+                                        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- handling type-indifferent runtime possibility
+                                        result === null
+                                    ) {
+                                        throw new Error(
+                                            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- handling type-indifferent runtime possibility
+                                            `[pagemeta] defaults function must return an object, got ${result === null ? "null" : typeof result}`
+                                        );
+                                    }
+                                    computedDefaults = result;
+                                } else {
+                                    computedDefaults = _defaults ?? {};
+                                }
 
                                 if (
                                     !pageMeta &&
@@ -72,13 +85,23 @@ export default defineIntegration({
                             setPagemeta: ((ctx, data) => {
                                 if (data === false) {
                                     // @ts-expect-error -- index type error, not worrying about it given we're coordinating with our own symbol
-                                    ctx.locals[LOCALS_KEY] = false;
+                                    ctx.locals[LOCALS_KEY] = false; // hard opt-out i.e. skip any defaults, don't set any meta tags
                                     return;
+                                }
+
+                                if (
+                                    typeof data !== "object" ||
+                                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- handling type-indifferent runtime possibility
+                                    data === null
+                                ) {
+                                    throw new Error(
+                                        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- handling type-indifferent runtime possibility
+                                        `[pagemeta] setPagemeta data must be an object or false, got ${data === null ? "null" : typeof data}`
+                                    );
                                 }
 
                                 // @ts-expect-error -- index type error, not worrying about it given we're coordinating with our own symbol
                                 const pageMeta = ctx.locals[LOCALS_KEY] as
-                                    | false // hard opt-out i.e. skip any defaults, don't set any meta tags
                                     | Options
                                     | undefined;
 

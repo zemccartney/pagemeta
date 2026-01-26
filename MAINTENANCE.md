@@ -3,7 +3,8 @@
 ## Principles (TLDR)
 
 - one fixture per dev / build combination, to avoid file system collision across different rendering modes
-- one server per file i.e. only one integration instance per file i.e. only one configuration case
+- **build tests**: one configuration case per file (strict requirement)
+- **dev tests**: multiple configurations allowed per file, but tests must run sequentially and stop servers properly
 - for all configuration cases tested, verify behavior across ssr and static rendering
 
 ## Test File Organization
@@ -139,6 +140,63 @@ pnpm test -- --no-file-parallelism
 # Run specific test file
 pnpm test tests/basic/static/dev.test.ts
 ```
+
+## Build Tests vs Dev Tests: Configuration Rules
+
+### The Underlying Issue
+
+`@inox-tools/inline-mod` maintains a global module registry. When a module ID is registered twice:
+- **Build mode**: Throws "Module already defined" error
+- **Dev mode**: Silently overwrites the registry entry
+
+See `.plan/BUG_REPORT_INLINE_MOD.md` for full details.
+
+### Build Tests: One Configuration Per File (Strict)
+
+Build tests (`fixture.build()`) **must** have only one integration configuration per file. The second `build()` call will throw.
+
+```typescript
+// ❌ WRONG - second build throws "Module already defined"
+await fixture.build({ integrations: [pagemeta({ defaults: { title: "A" } })] });
+await fixture.build({ integrations: [pagemeta({ defaults: { title: "B" } })] });
+```
+
+This is why we have separate files like `static/build.test.ts` and `ssr/build.test.ts`.
+
+### Dev Tests: Multiple Configurations Allowed (With Caveats)
+
+Dev tests (`fixture.startDevServer()`) can test multiple configurations in one file because the registry silently overwrites. However, this only works if:
+
+1. **Tests run sequentially** (vitest default within a file)
+2. **Each test stops its server before the next starts**
+
+```typescript
+// ✅ OK - sequential with proper cleanup
+test("config A", async () => {
+    const dev = await fixture.startDevServer({ integrations: [pagemeta(configA)] });
+    try {
+        // assertions
+    } finally {
+        await dev.stop();  // Must complete before next test
+    }
+});
+
+test("config B", async () => {
+    const dev = await fixture.startDevServer({ integrations: [pagemeta(configB)] });
+    // ...
+});
+```
+
+**Warning**: If two servers run concurrently, the second overwrites the first's module. Server A would then return Server B's content. This is a footgun - test behavior depends on execution order, not server identity.
+
+### When to Use Each Pattern
+
+| Scenario | Pattern |
+|----------|---------|
+| Testing output modes (static/SSR) | Separate files per mode |
+| Testing integration options | Separate files per option set |
+| Testing error handling / edge cases | Single dev-test file with multiple configs |
+| Verifying build behavior | Must use build tests (dev won't catch issues) |
 
 ## Known Quirks
 
