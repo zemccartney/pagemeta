@@ -39,8 +39,6 @@ export default defineIntegration({
         const LOCALS_KEY = Symbol("pagemeta");
         const pageRoutes = lazyValue<RegExp[]>();
 
-        console.log("INTEGRATION!!!");
-
         return withPlugins({
             hooks: {
                 "astro:config:setup": ({ addMiddleware, defineModule }) => {
