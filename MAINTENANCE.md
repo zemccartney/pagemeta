@@ -198,6 +198,16 @@ test("config B", async () => {
 | Testing error handling / edge cases | Single dev-test file with multiple configs |
 | Verifying build behavior | Must use build tests (dev won't catch issues) |
 
+## Virtual Module / Runtime Stub Sync
+
+The runtime module has three layers that must stay in sync when adding or removing exports:
+
+1. **`src/index.ts`** — `constExports` in `defineModule()` defines what the virtual module contains
+2. **`runtime-stub.js`** — re-exports each name from the virtual module; this is what `@grepco/astro-pagemeta/runtime` resolves to via `package.json#exports`
+3. **`src/virtual.d.ts`** — type declarations for the public module specifier
+
+If an export is added to `constExports` but not to `runtime-stub.js`, it will be `undefined` at runtime. The stub can't use `export *` because it bridges a dynamic `import()` of the virtual module — each export must be forwarded by name.
+
 ## Known Quirks
 
 ### Trailing Slashes in Static Builds

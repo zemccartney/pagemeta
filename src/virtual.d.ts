@@ -3,4 +3,5 @@ declare module "@grepco/astro-pagemeta/runtime" {
     // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html#import-types
     export const setPagemeta: import("./types.ts").SetPagemeta;
     export const resolvePagemeta: import("./types.ts").ResolvePagemeta;
+    export const isPageRoute: import("./types.ts").IsPageRoute;
 }

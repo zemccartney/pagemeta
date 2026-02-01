@@ -1,0 +1,21 @@
+---
+import { setPagemeta } from "@grepco/astro-pagemeta/runtime";
+
+import Greeting from "../components/greeting.astro";
+
+setPagemeta(Astro, {
+    description: "Page with server island",
+    title: "Server Island Page"
+});
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+    </head>
+    <body>
+        <p>Main page content</p>
+        <Greeting server:defer />
+    </body>
+</html>

@@ -1,17 +1,13 @@
-import { resolvePagemeta } from "@grepco/astro-pagemeta/runtime";
+import { isPageRoute, resolvePagemeta } from "@grepco/astro-pagemeta/runtime";
 import { defineMiddleware } from "astro/middleware";
 import { rehype } from "rehype";
 import rehypeMeta from "rehype-meta";
 
-const isHtmlResponse = (response: Response): boolean => {
-    const contentType = response.headers.get("content-type");
-    return contentType?.includes("text/html") ?? false;
-};
-
 export const onRequest = defineMiddleware(async (context, next) => {
     const response = await next();
 
-    if (!isHtmlResponse(response)) {
+    // Skip non-page routes (server islands, API routes, etc.)
+    if (!isPageRoute(context.url.pathname)) {
         return response;
     }
 

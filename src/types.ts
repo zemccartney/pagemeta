@@ -1,6 +1,8 @@
 import type { APIContext } from "astro";
 import type { Options } from "rehype-meta";
 
+export type IsPageRoute = (pathname: string) => boolean;
+
 export type ResolvePagemeta = (
     ctx: Readonly<APIContext>
 ) => Options | undefined;

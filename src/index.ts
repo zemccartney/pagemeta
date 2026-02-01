@@ -2,6 +2,7 @@ import type { APIContext } from "astro";
 import type { Options } from "rehype-meta";
 
 import aikMod from "@inox-tools/aik-mod";
+import { lazyValue } from "@inox-tools/inline-mod";
 import {
     createResolver,
     defineIntegration,
@@ -9,7 +10,7 @@ import {
 } from "astro-integration-kit";
 import { z } from "astro/zod";
 
-import type { ResolvePagemeta, SetPagemeta } from "./types.ts";
+import type { IsPageRoute, ResolvePagemeta, SetPagemeta } from "./types.ts";
 
 const optionsSchema = z
     .object({
@@ -36,12 +37,22 @@ export default defineIntegration({
     setup: ({ name, options }) => {
         const { resolve } = createResolver(import.meta.url);
         const LOCALS_KEY = Symbol("pagemeta");
+        const pageRoutes = lazyValue<RegExp[]>();
+
+        console.log("INTEGRATION!!!");
 
         return withPlugins({
             hooks: {
                 "astro:config:setup": ({ addMiddleware, defineModule }) => {
+                    // Exports here must be kept in sync with runtime-stub.js,
+                    // which re-exports each by name from the virtual module.
                     defineModule(`virtual:${name}/runtime`, {
                         constExports: {
+                            isPageRoute: ((pathname: string) => {
+                                return (pageRoutes as unknown as RegExp[]).some(
+                                    (r) => r.test(pathname)
+                                );
+                            }) satisfies IsPageRoute,
                             resolvePagemeta: ((ctx) => {
                                 // @ts-expect-error -- index type error, not worrying about it given we're coordinating with our own symbol
                                 const pageMeta = ctx.locals[LOCALS_KEY] as
@@ -118,6 +129,17 @@ export default defineIntegration({
                         entrypoint: resolve("./middleware.ts"),
                         order: "post"
                     });
+                },
+                "astro:routes:resolved": ({ routes }) => {
+                    // @ts-expect-error -- difficulty of telling ts that pageRoutes will resolve to the input value. Unclear why this error occurs, but not worth digging into
+                    pageRoutes.resolve(
+                        routes
+                            .filter(
+                                (r) =>
+                                    r.type === "page" || r.type === "fallback"
+                            )
+                            .map((r) => r.patternRegex)
+                    );
                 }
             },
             name,

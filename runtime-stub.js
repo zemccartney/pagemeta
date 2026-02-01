@@ -12,6 +12,10 @@
     2. we dynamically import the virtual module, available only in a astro-built environment (vite-backed)
 
     If you import @grepco/astro-pagemeta/runtime outside of astro, we crash with a hopefully informative error message
+
+    IMPORTANT: Named exports below must be kept in sync with the constExports
+    defined in src/index.ts. New virtual module exports will be undefined at
+    runtime unless re-exported here.
 */
 let mod;
 try {
@@ -28,3 +32,4 @@ try {
 
 export const resolvePagemeta = mod.resolvePagemeta;
 export const setPagemeta = mod.setPagemeta;
+export const isPageRoute = mod.isPageRoute;
